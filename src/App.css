@@ -1,0 +1,19 @@
+.App {
+  padding:20px;
+}
+
+
+.App-header {
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  color: black;
+}
+table{
+   border-collapse: collapse;
+}
+table, td, th {
+  border: 1px solid black;
+  padding: 15px;
+}
