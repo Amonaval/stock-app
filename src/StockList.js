@@ -17,10 +17,10 @@ class StockList extends Component {
       var currentStock = stockDataList[item.stockName];
       if(currentStock) {
         if(currentStock.stockPrice < item.stockPrice) {  
-          currentStock.color = 'green';
+          currentStock.color = '#CD5C5C';
         }
         if(currentStock.stockPrice > item.stockPrice) {
-          currentStock.color = 'red';
+          currentStock.color = '#90EE90';
         }
         const timeDiff = Math.abs(new Date().getTime() - item.date);
         // const days = parseInt((timeDiff / (1000 * 3600)) % 24, 10); 
@@ -28,16 +28,18 @@ class StockList extends Component {
         const mins =  Math.ceil((timeDiff / (1000 * 3600)) % 60, 10);
         let lastUpdate = '';
         if(mins) {
-          lastUpdate = (hours === 0 && mins < 5) ? 'few mins' : `${mins} min `;
+          lastUpdate = (hours === 0 && mins < 5) ? 'few secs' : `${mins} min `;
         }
         if(hours) {
           lastUpdate += `${hours} hr`;
         }
         
         lastUpdate +=  '  before';
+        const percentageChange = Math.round((1-(currentStock.stockPrice/item.stockPrice))*100).toFixed(2);
         currentStock.date = lastUpdate;
-        currentStock.stockPrice = item.stockPrice;
-        currentStock[item.stockName] = item.stockPrice;
+        currentStock.stockPrice = Math.round(item.stockPrice).toFixed(3);
+        currentStock[item.stockName] = Math.round(item.stockPrice).toFixed(3);
+        currentStock.percentageChange = `${percentageChange} %`;
       } else {
         let newItem = item;
         newItem.color = '';
@@ -47,6 +49,7 @@ class StockList extends Component {
         let lastupdateMins = new Date(item.date).getMinutes();
         lastupdate = (lastupdate/12 > 1) ? `${lastupdate % 12}:${lastupdateMins} pm` : `${lastupdate}:${lastupdateMins} am`;
         stockDataList[item.stockName].date = lastupdate;
+        stockDataList[item.stockName].stockPrice = Math.round(item.stockPrice).toFixed(3);
       }
     });
 
@@ -63,14 +66,15 @@ class StockList extends Component {
       return (<tr key={stockDataItem.stockName}>
         <td>{stockDataItem.stockName}</td>
         <td bgcolor={stockDataItem.color}>{stockDataItem.stockPrice}</td>
-        <td>{stockDataItem.date}</td>
+        <td color={stockDataItem.color}>{stockDataItem.percentageChange}</td>
+        <td className="update-date">{stockDataItem.date}</td>
         </tr>)
     });
 
     return (
         <table>
           <tbody>
-            <tr><th>Ticker</th><th>Price</th><th>Last Update</th></tr>
+            <tr><th>Ticker</th><th>Price</th><th>% change</th><th>Last Update    </th></tr>
             {tabItems}
           </tbody>
         </table>
