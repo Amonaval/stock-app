@@ -7,18 +7,18 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      connected: false,
-      stockData: []
+      stockData: [],
+      connectionState: 0
     }
   }
 
   componentDidMount() {
     const websocketurl = "ws://stocks.mnet.website";
     const socket = new WebSocket(websocketurl);
-    socket.onopen = () => this.setState({connected: true});
-    socket.onclose = () => this.setState({connected: false});
+    this.setState({connectionState: socket.readyState})
+    socket.onclose = () => this.setState({connectionState: socket.readyState});
     socket.onmessage = (message) => {
-
+      this.setState({connectionState: socket.readyState})
       let modifiedItems = [];
       const stockList = message && message.data && JSON.parse(message.data);
       stockList && stockList.forEach((data, i) => {
@@ -41,10 +41,17 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <div className="stock-analyze">
+          {this.state.connectionState === 1 && <div className="stock-analyze">
             <h2>Live Stock Ticker App</h2>
-            <StockList dataTick={this.state.stockData} />
-          </div>
+              <StockList dataTick={this.state.stockData} />
+          </div>}
+          {this.state.connectionState > 1 && <div>
+             Unable to establish socket connection. Please check internet or 
+             proxy settings of your machine
+          </div>}
+          {this.state.connectionState === 0 && <div>
+             Connecting...
+          </div>}
         </header>
       </div>
     );
