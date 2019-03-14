@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import StockList from './StockList'
 import './App.css';
+import {wsURL} from './App.config';
 
 class App extends Component {
   
@@ -13,7 +14,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const websocketurl = "ws://stocks.mnet.website";
+    const websocketurl = wsURL;
     const socket = new WebSocket(websocketurl);
     this.setState({connectionState: socket.readyState})
     socket.onclose = () => this.setState({connectionState: socket.readyState});
@@ -30,7 +31,7 @@ class App extends Component {
         obj.date = new Date().getTime();
         modifiedItems.push(obj);
       })
-
+      
       this.setState((state, props) => ({
         stockData: modifiedItems
       }));

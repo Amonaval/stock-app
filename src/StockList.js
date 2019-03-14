@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import {displayDateFormat, colorPriceChange, TABLE_HEADING} from './App.config';
 
 class StockList extends Component {
   
@@ -17,23 +18,24 @@ class StockList extends Component {
        // for customize condition
        // e.g if hours > 2 show textFormat/timeFormat
 
+      //  const testDate = 1552532183984
        const timeDiff = Math.abs(new Date().getTime() - item.date);
        // const days = parseInt((timeDiff / (1000 * 3600)) % 24, 10);  
        const hours = parseInt(timeDiff / (1000 * 3600), 10); 
        const mins =  Math.ceil((timeDiff / (1000 * 3600)) % 60, 10);
        
        switch(displayFormat){
-          case 'textFomat':
+          case displayDateFormat.TEXT_FORMAT:
               // Format like - few secs before, x min before, x hr y min before
               if(mins) {
-                lastUpdate = (hours === 0 && mins < 2) ? 'few secs' : `${mins} min `;
+                lastUpdate = (hours === 0 && mins < 5 && mins > 1) ? 'few mins' : `${mins} min `;
               }
               if(hours) {
                 lastUpdate += `${hours} hr`;
               }
-              lastUpdate +=  '  before';
+              lastUpdate +=  '  ago';
               break;
-          case 'timeFormat':
+          case displayDateFormat.TIME_FORMAT:
               const itemDate = new Date(item.date);
               lastUpdate = itemDate.getHours();
               let lastupdateMins = itemDate.getMinutes();
@@ -58,13 +60,13 @@ class StockList extends Component {
       if(currentStock) {
         // Change color for positive & negative price change
         if(currentStock.stockPrice < item.stockPrice) {  
-          currentStock.color = '#CD5C5C';
+          currentStock.color = colorPriceChange.RED;
         }
         if(currentStock.stockPrice > item.stockPrice) {
-          currentStock.color = '#90EE90';
+          currentStock.color = colorPriceChange.GREEN;
         }
-        let lastUpdate = this.getlastUpdateVal(currentStock, 'timeFormat');
-        const percentageChange = Math.round((1-(currentStock.stockPrice/item.stockPrice))*100).toFixed(2);
+        let lastUpdate = this.getlastUpdateVal(currentStock, displayDateFormat.TIME_FORMAT);
+        const percentageChange = Math.round(((currentStock.stockPrice/item.stockPrice)-1)*100).toFixed(2);
 
         currentStock.date = item.date;
         currentStock.displayDate = lastUpdate;
@@ -74,12 +76,14 @@ class StockList extends Component {
       } else {
         let newItem = item;
         stockDataList[item.stockName] = newItem;
-        stockDataList[item.stockName].displayDate =  this.getlastUpdateVal(item, 'timeFormat');;
+        stockDataList[item.stockName].displayDate =  this.getlastUpdateVal(item, displayDateFormat.TIME_FORMAT);
         stockDataList[item.stockName].stockPrice = Math.round(item.stockPrice).toFixed(3);
       }
     });
 
-    this.setState({stockData: stockDataList});
+    this.setState((state) => ({
+      stockData: stockDataList
+    }));
   }
   
   listItems = () => {
@@ -90,7 +94,7 @@ class StockList extends Component {
       return (<tr key={stockDataItem.stockName}>
         <td>{stockDataItem.stockName}</td>
         <td bgcolor={stockDataItem.color}>{stockDataItem.stockPrice}</td>
-        <td color={stockDataItem.color}>{stockDataItem.percentageChange}</td>
+        <td>{stockDataItem.percentageChange}</td>
         <td className="update-date">{stockDataItem.displayDate}</td>
       </tr>)
     });
@@ -98,7 +102,12 @@ class StockList extends Component {
     return (
         <table>
           <tbody>
-            <tr><th>Ticker</th><th>Price</th><th>% change</th><th>Last Update</th></tr>
+            <tr>
+              <th>{TABLE_HEADING.TICKER}</th>
+              <th>{TABLE_HEADING.PRICE}</th>
+              <th>{TABLE_HEADING.PERCENT_CHANGE}</th>
+              <th>{TABLE_HEADING.LAST_UPDATE}</th>
+            </tr>
             {tabItems}
           </tbody>
         </table>
