@@ -1,14 +1,13 @@
-
 Stock Tick Observer App
 
-This app is developed in reactjs. It is not large scale app hence 
+This app fetches real time data from websocket & display the prices, last updated time & prices.
+
+This app is developed in ReactJs. It is not large scale app hence 
 state management framework like (Redux/Flux) is not used here.
 
 Time taken -
-
 React App - 2-2.5 hr
 Github setup & demo github page creation - 2 hr
-
 
 ***********************************************************
 
@@ -33,3 +32,7 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 
 ### `npm run build`
 
+Builds the app for production to the `build` folder.<br>
+It correctly bundles React in production mode and optimizes the build for the best performance.
+The build is minified and the filenames include the hashes.<br>
+Your app is ready to be deployed!
