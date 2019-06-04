@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Stock Watcher</title>
+
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.indigo-pink.min.css"> 
+    <script defer src="https://code.getmdl.io/1.2.1/material.min.js"></script>-->
+    <script src="js/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"> -->
+    
+    
+    <!-- <link rel="stylesheet" href="styles/index.css"> -->
+    <style>
+        .section_strategy{
+            
+            padding: 20px;
+            min-height: 100px;
+            font-size:20px;
+        }
+        .category{
+            margin-top: 40px;
+            padding-bottom: 5px;
+            font-size:14px;
+        }
+
+        #exTab2 h3 {
+            color : white;
+            background-color: #428bca;
+            padding : 5px 15px;
+        }
+
+        .setting-icon{
+            background-image: url('images/setting.png');
+            width:20px;
+            height:20px;
+            background-size: 100%;
+            position: absolute;
+            right:20px;
+        }
+
+        .main-container{
+            border:1px solid red;
+            margin: 10px;
+            padding: 10px;
+        }
+        .app-title {
+            width:200px;
+        }
+        .setting-btns{
+            display:none;
+        }
+    </style>
+</head>
+<body>
+<!-- http://docs.phonegap.com/getting-started/3-create-your-app/cli/ -->
+
+<div class="main-container">
+  <h3><div class="app-title"> Stock Anaylzer</div></h3>
+
+
+
+    <div class="setting-icon" onClick="toggleMenu()"></div>
+    <div class="setting-btns">
+        Enable Fetching of data for
+        <div class="btn btn-primary">onlyBuyer</div>
+        <div class="btn btn-primary">onlySeller</div>
+        <div class="btn btn-primary">HourlyGainers</div>
+        <div class="btn btn-primary">HourlyLosers</div>
+    </div>
+
+    <div class="container">
+
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home">Only Buyers (Newly added)</a></li>
+        <li><a data-toggle="tab" href="#menu1">Only Buyers (Just removed)</a></li>
+        <li><a data-toggle="tab" href="#menu2">Hourly Gainers</a></li>
+        <li><a data-toggle="tab" href="#menu3">Hourly Losers</a></li>
+        <li><a data-toggle="tab" href="#menu4">Only Sellers (Newly added)</a></li>
+        <li><a data-toggle="tab" href="#menu5">Only Sellers (Just removed)</a></li>
+      </ul>
+
+      <div class="tab-content">
+        <div id="home" class="tab-pane fade in active">
+          <div class="section_strategy">
+                <div id="onlyBuyersAdded" class="category"></div>
+            </div>
+        </div>
+        <div id="menu1" class="tab-pane fade">
+            <div class="section_strategy">
+                <div id="onlyBuyersRemoved" class="category"></div>
+            </div>
+          
+        </div>
+        <div id="menu2" class="tab-pane fade">
+            <div class="section_strategy">
+                <div id="newHourlyGainers" class="category"></div>            
+            </div>
+        </div>
+        <div id="menu3" class="tab-pane fade">
+            <div class="section_strategy">
+               <div id="newHourlyLosers" class="category"></div>
+            </div>
+               
+        </div>
+
+        <div id="menu4" class="tab-pane fade in active">
+          <div class="section_strategy">
+                <div id="onlySellerAdded" class="category"></div>
+            </div>
+        </div>
+        <div id="menu5" class="tab-pane fade">
+            <div class="section_strategy">
+                <div id="onlySellerRemoved" class="category"></div>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+
+
+
+  <div class="tab-content">
+    <div id="home" class="tab-pane fade in active">
+        
+    </div>
+    </div>
+    <div id="menu1" class="tab-pane fade">
+      <h3>Menu 1</h3>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </div>
+    <div id="menu2" class="tab-pane fade">
+      Newly added in only buyers - <div id="onlyBuyersAdded" class="category"></div>
+    </div>
+    <div id="menu3" class="tab-pane fade">
+       Just removed from only buyers - <div id="onlyBuyersRemoved" class="category"></div>
+    </div>
+    <div id="menu3" class="tab-pane fade">
+       <div id="topLoserResult" class="section_strategy">
+            Hourly Gainers - <div id="newHourlyGainers" class="category"></div>            
+        </div>
+    </div>
+    <div id="menu3" class="tab-pane fade">
+            Hourly Losers - <div id="newHourlyLosers" class="category"></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/bootstrap.min.js"></script>
+
+
+<hr></hr>
+<br />
+
+<script>
+var oldVal = null;
+
+
+var onlyBuyersData = 'https://etmarketsapis.indiatimes.com/ET_Stats/onlybuyer?pagesize=1000&pid=4&exchange=nse&pageno=1&service=buyers&sortby=bestBuyQty&sortorder=desc&callback=ajaxResponse'
+
+var onlySellerData = 'https://etmarketsapis.indiatimes.com/ET_Stats/onlyseller?pid=4&pageno=1&pagesize=1000&sortby=bestSellQty&sortorder=desc&service=sellers&exchange=nse&callback=ajaxResponse'
+
+
+var hourlyGainers = 'https://etmarketsapis.indiatimes.com/ET_Stats/hourlygainers?pid=2&pageno=1&pagesize=350&sortby=percentchange&sortorder=desc&service=gainers&exchange=nse&callback=ajaxResponse'
+
+var hourlyLosers = 'https://etmarketsapis.indiatimes.com/ET_Stats/hourlylosers?pagesize=350&pid=2&exchange=nse&pageno=1&service=losers&sortby=percentchange&sortorder=asc&callback=ajaxResponse'
+
+
+var topLosers = 'https://etmarketsapis.indiatimes.com/ET_Stats/losers?pid=1&pageno=1&pagesize=300&sortby=percentchange&sortorder=asc&sort=intraday&exchange=nse&duration=1d&callback=ajaxResponse'
+
+
+var topGainers = 'https://etmarketsapis.indiatimes.com/ET_Stats/gainers?pid=0&pageno=1&pagesize=300&sortby=percentchange&sortorder=desc&sort=intraday&exchange=nse&duration=1d&callback=ajaxResponse'
+
+
+
+var topActiveByVolume = 'https://etmarketsapis.indiatimes.com/ET_Stats/moversvolume?pid=3&pageno=1&pagesize=125&sortby=volume&sortorder=desc&service=volumemovers&exchange=nse&callback=ajaxResponse'
+
+var topActiveByValue = 'https://etmarketsapis.indiatimes.com/ET_Stats/moversvalue?pid=3&pageno=1&pagesize=125&sortby=value&sortorder=desc&service=valuemovers&exchange=nse&callback=ajaxResponse'
+
+
+var fallFromIntradayHigh = 'https://etmarketsapis.indiatimes.com/ET_Stats/fallfromhigh?pid=9&pageno=1&pagesize=50&sortby=belowDaysHighPerChange&sortorder=asc&service=intradayhigh&exchange=nse&callback=ajaxResponse'
+
+
+var recoveredFromIntradayLow = 'https://etmarketsapis.indiatimes.com/ET_Stats/recoveryfromlow?pid=10&pageno=1&pagesize=50&sortby=aboveDaysLowPerChange&sortorder=desc&service=intradaylow&exchange=nse&callback=ajaxResponse'
+
+
+
+
+/******************************** www.nseindia.com **********
+
+https://www.nseindia.com/live_market/dynaContent/live_analysis/gainers/niftyGainers1.json
+https://www.nseindia.com/live_market/dynaContent/live_analysis/losers/niftyLosers1.json
+https://www.nseindia.com/live_market/dynaContent/live_analysis/most_active/allTopValue1.json */
+
+
+function toggleMenu() {
+    $('.setting-btns').toggle();
+}
+
+
+function getData(reqUrl, callBackFunction) {
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(res, data) {
+        if (this.readyState == 4 && this.status == 200) {
+            debugger;
+            callBackFunction(res);
+        }  // if readystate
+    };  // ready state change end
+    xhttp.open("GET",reqUrl, true);
+    xhttp.send();
+}  
+
+function getStockInfo(reqUrl, callBackFunction, optionalData) {
+   fetch(reqUrl).then(response => {
+      return response.json();
+    }).then(data => {
+      // Work with JSON data here
+      callBackFunction(data, optionalData);
+    }).catch(err => {
+      // Do something for an error here
+    });
+
+}  
+
+function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+
+
+
+
+/************  Strategy one observe onlyBuyersData changes ***********/
+
+var oldTopLoser = {}, newTopLoserResult = {}, addedCompanyToOnlyBuyers=[], removedCompanyFromOnlyBuyers=[];
+function onlyBuyersDataCallback(data) {
+
+    /****  Test hook *******
+    var mathRandomNum = parseInt(Math.random() * (data.searchresult.length-1), 10);
+    data.searchresult[mathRandomNum].companyName = 'newly'+mathRandomNum;
+    /********************/
+
+    data.searchresult.forEach(function(item){
+        newTopLoserResult[item.companyName] = item.percentChange;
+        if(!oldTopLoser.hasOwnProperty(item.companyName) && newTopLoserResult.hasOwnProperty(item.companyName) && !isEmpty(oldTopLoser)) {
+            addedCompanyToOnlyBuyers.push(item.companyName);
+        } 
+    });
+    for(var key in oldTopLoser) {
+        if(!newTopLoserResult.hasOwnProperty(key) && oldTopLoser.hasOwnProperty(key)) {
+            removedCompanyFromOnlyBuyers.push(key);
+        }
+    }
+    if(addedCompanyToOnlyBuyers.length > 0) {
+        $('#onlyBuyersAdded').append(addedCompanyToOnlyBuyers + ' ' + new Date() + '<br />');
+        console.log("Newly added in top losers", addedCompanyToOnlyBuyers, new Date());
+    }
+    if(removedCompanyFromOnlyBuyers.length > 0) {
+        $('#onlyBuyersRemoved').append(removedCompanyFromOnlyBuyers + '' + new Date() + '<br />');
+        console.log("Just removed from top losers", removedCompanyFromOnlyBuyers, new Date());
+    }
+
+    addedCompanyToOnlyBuyers = [];
+    removedCompanyFromOnlyBuyers = [];
+    oldTopLoser = {};
+    oldTopLoser = Object.assign({}, newTopLoserResult);
+
+}
+
+
+
+
+
+/************  Strategy one observe onlySellerData changes ***********/
+
+var oldOnlySeller = {}, newOnlySellerResult = {}, addedCompanyToOnlySellers=[], removedCompanyFromOnlySellers=[];
+function onlySellerDataCallback(data) {
+
+    /****  Test hook *******
+    var mathRandomNum = parseInt(Math.random() * (data.searchresult.length-1), 10);
+    data.searchresult[mathRandomNum].companyName = 'newly'+mathRandomNum;
+    /********************/
+
+    data.searchresult.forEach(function(item){
+        newOnlySellerResult[item.companyName] = item.percentChange;
+        if(!oldOnlySeller.hasOwnProperty(item.companyName) && newOnlySellerResult.hasOwnProperty(item.companyName) && !isEmpty(oldOnlySeller)) {
+            addedCompanyToOnlySellers.push(item.companyName);
+        } 
+    });
+    for(var key in oldOnlySeller) {
+        if(!newOnlySellerResult.hasOwnProperty(key) && oldOnlySeller.hasOwnProperty(key)) {
+            removedCompanyFromOnlySellers.push(key);
+        }
+    }
+    if(addedCompanyToOnlySellers.length > 0) {
+        $('#onlySellerAdded').append(addedCompanyToOnlySellers + ' ' + new Date() + '<br />');
+        console.log("Newly added in top losers", addedCompanyToOnlySellers, new Date());
+    }
+    if(removedCompanyFromOnlySellers.length > 0) {
+        $('#onlySellerRemoved').append(removedCompanyFromOnlySellers + '' + new Date() + '<br />');
+        console.log("Just removed from top losers", removedCompanyFromOnlySellers, new Date());
+    }
+
+    addedCompanyToOnlySellers = [];
+    removedCompanyFromOnlySellers = [];
+    oldOnlySeller = {};
+    oldOnlySeller = Object.assign({}, newOnlySellerResult);
+
+}
+
+
+/************************ Hourly Gainers & Loser Observer *******************************/
+
+
+
+
+var oldHourlyGainerValue = {},
+    oldHourlyLoserValue = {},
+    hourlyRecord=[];
+
+
+function HourlyDataCallback(data, optionalData) {
+    switch(optionalData) {
+        case 'gainers':
+            oldHourlyGainerValue = HourlyDataFunction(data, oldHourlyGainerValue, 'newHourlyGainers');
+                    break;
+        case 'losers':    
+            oldHourlyLoserValue = HourlyDataFunction(data, oldHourlyLoserValue, 'newHourlyLosers');    
+                    break;
+        default: break
+    }
+}
+
+function HourlyDataFunction(data, oldHourlyData, selector) {
+
+    /****  Test hook *******
+    var mathRandomNum = parseInt(Math.random() * (data.searchresult.length-1), 10);
+    data.searchresult[mathRandomNum].percentChange = parseInt(Math.random() * 50, 10);
+    **********************/
+
+    var newHourlyData = {};
+    data.searchresult.forEach(function(item){
+        newHourlyData[item.companyName] = item.percentChange;
+    });
+    for(var key in oldHourlyData) {
+        if((newHourlyData[key] - oldHourlyData[key]) > 6) {
+            hourlyRecord.push({ 'name' : key, 'percentchange': newHourlyData[key]});
+        }
+    }
+    var time = (new Date()).toLocaleDateString() + '   ' + (new Date()).toLocaleTimeString()
+    if(hourlyRecord.length > 0) {
+        $('#' + selector).append(JSON.stringify(hourlyRecord) + '               ' + time);
+        $('#' + selector).append("<br />");
+        console.log(hourlyRecord, new Date());
+    }
+
+    hourlyRecord = [];
+    oldHourlyData = {};
+    oldHourlyData = Object.assign({}, newHourlyData);
+    return oldHourlyData;
+}
+
+var onlyBuyersEnabled=true, hourlyGainersEnabled=true, hourlyLosersEnabled=true;
+var onlyBuyersInterval, hourlyGainersInterval, hourlyLosersInterval;
+
+function toggleFetching(data) {
+    switch(data) {
+        case 'onlyBuyer' :  
+            if(onlyBuyersEnabled)  {
+                clearInterval(onlyBuyersInterval);
+            } else {
+                onlyBuyersInterval = startFetchingInterval(onlyBuyersData, onlyBuyersDataCallback, 4000);
+            }
+            onlyBuyersEnabled = !onlyBuyersEnabled;
+            break;
+        case 'HourlyGainers' :  
+            if(hourlyGainersEnabled)  {
+                clearInterval(hourlyGainersInterval);
+            } else {
+                hourlyGainersInterval = startFetchingInterval(hourlyGainers, HourlyDataCallback, 2000,'gainers');
+            }
+            hourlyGainersEnabled = !hourlyGainersEnabled;
+            break;
+        case 'HourlyLosers' :  
+            if(hourlyLosersEnabled)  {
+                clearInterval(hourlyLosersInterval);
+            } else {
+                hourlyLosersInterval = startFetchingInterval(hourlyLosers, HourlyDataCallback, 2000,'losers');
+            }
+            hourlyLosersEnabled = !hourlyLosersEnabled;
+            break;
+    }
+}
+
+
+$(document).ready(function(){
+        $('.setting-btns .btn-primary').click(function(e, data){
+            toggleFetching(e.target.textContent);
+        })
+})
+
+onlyBuyersInterval = startFetchingInterval(onlyBuyersData, onlyBuyersDataCallback, 40000);
+onlySellerInterval = startFetchingInterval(onlySellerData, onlySellerDataCallback, 40000);
+hourlyGainersInterval = startFetchingInterval(hourlyGainers, HourlyDataCallback, 30000, 'gainers');
+hourlyLosersInterval = startFetchingInterval(hourlyLosers, HourlyDataCallback, 30000, 'losers');
+
+function startFetchingInterval(fetchData, fetchCallback, fetchInterval, optionalData) {
+    getStockInfo(fetchData, fetchCallback, optionalData);
+    return setInterval(function() {
+        getStockInfo(fetchData, fetchCallback, optionalData);
+    }, fetchInterval);
+}
+
+</script>
+
+</body>
+</html>

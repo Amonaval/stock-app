@@ -1,0 +1,111 @@
+.stick-header-title {
+  height:40px;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+  background-color: grey;
+  padding:10px;
+  color: white;
+}
+
+.btn {
+  display: inline-block;
+  border: 1px solid black;
+  background: #007bff;
+  color: white;
+  margin-right: 20px;
+  cursor: pointer;
+  padding: 5px 20px;
+}
+.btn-primary {
+  background: #007bff;
+}
+
+.btn-secondary {
+  background: #117a8b;
+}
+
+.directory-container{
+  margin: 30px;
+  margin-left: 50px;
+}
+
+.directory-list, .register-form, .add-subsciber, .notification{
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.validataion-error{
+  color:red;
+}
+
+.directory-list table td, table th {
+  width: 100px;
+}
+
+.directory-list table th {
+  text-align: left;
+}
+
+.label{
+  min-width: 90px;
+  margin-right: 20px;
+  display: inline-block;
+}
+
+
+.stock-app-container{
+  margin:20px;
+}
+
+.expression-params, .stock-list {
+  float:left;
+  width: 65%;
+  margin-top: 40px;
+}
+
+ .stock-list {
+  width: 30%;
+ }
+
+.droppableArea {
+  border:1px solid black;
+  height: 50px;
+  width: 800px;
+}
+
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.flex-container div {
+  background-color: #555555;
+  color: #fff;
+  border: 4px;
+  padding:5px 10px;
+  margin: 5px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.expression-type {
+    width: 100px;
+    font-weight: bold;
+    background: none;
+    color: black;
+    float: left;
+    clear: both;
+    margin-top: 20px;
+}
+
+.flex-container div:hover {
+  background-color: #333333;
+}
+
+.btn-container{
+  margin-top: 10px;
+  margin-bottom: 20px;
+}

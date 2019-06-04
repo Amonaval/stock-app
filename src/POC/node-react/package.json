@@ -1,0 +1,28 @@
+{
+  "name": "react_node_",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://amonaval.github.io/react-node-app/",
+  "main": "onlyBuyerServer.js",
+  "scripts": {
+    "client-install": "npm install --prefix client",
+    "client-build": "npm run build --prefix client",    
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "predeploy": "npm run client-install && npm run client-build",
+    "deploy": "gh-pages -d build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sendgrid/mail": "^6.3.1",
+    "axios": "^0.18.0",
+    "express": "^4.16.4",
+    "nodemon": "^1.18.10"
+  },
+  "devDependencies": {
+    "gh-pages": "^2.0.1"
+  }
+}
